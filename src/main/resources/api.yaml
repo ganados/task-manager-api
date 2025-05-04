@@ -49,15 +49,40 @@ paths:
             application/json:
               schema:
                 type: string
-  /task/{id}:
+    patch:
+      operationId: patchTask
+      description: Patch some values of the task
+      parameters:
+        - in: path
+          name: taskId
+          description: The ID of the specific task for which you want details
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskDetails"
+      responses:
+        '200':
+          description: Task has been patched
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /task/{taskId}:
     get:
       operationId: getTask
       description: Get task
       parameters:
         - in: path
-          name: id
+          name: taskId
           description: The ID of the specific task for which you want details
-          example: 1
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
           schema:
             type: string
           required: true
@@ -70,6 +95,53 @@ paths:
                 $ref: '#/components/schemas/TaskDetails'
         '404':
           description: Task with this id was not found
+          content:
+            application/json:
+              schema:
+                type: string
+
+    delete:
+      operationId: deleteTask
+      description: Delete task
+      parameters:
+        - in: path
+          name: taskId
+          description: The ID of the specific task which you want to delete
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /task/{boardId}/tasks:
+    get:
+      operationId: getBoardTasks
+      description: Get all tasks assigned to board
+      parameters:
+        - in: path
+          name: boardId
+          description: The ID of the specific board for which you want details
+          example: '32355082-8ccf-422c-be53-fd7d0c478c86'
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Board tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskDetails'
+        '404':
+          description: Board with this id was not found
           content:
             application/json:
               schema:
