@@ -1,0 +1,102 @@
+openapi: "3.0.0"
+info:
+  title: Lazychef
+  version: 1.0.0
+  description: Lazychef API
+paths:
+  /users/{id}:
+    get:
+      operationId: getUserDetails
+      description: Get user details
+      parameters:
+        - in: path
+          name: id
+          description: The ID of the specific user for which you want details.
+          example: 1
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '404':
+          description: User with this id was not found.
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+#####  ##### UserService #####  #####
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    UserDetails:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+      required:
+        - id
+        - username
+        - name
+        - surname
+        - email
+
+#####  ##### TaskService #####  #####
+    Status:
+      type: string
+      enum:
+        - TODO
+        - DOING
+        - ON_HOLD
+        - DONE
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+        reporterId:
+          type: string
+        assigneeId:
+          type: string
+        boardId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+
+
+#####  ##### BoardService #####  #####
+
