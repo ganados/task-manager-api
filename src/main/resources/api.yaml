@@ -5,13 +5,13 @@ info:
   description: Lazychef API
 paths:
 #####  ##### UserService #####  #####
-  /users/{id}:
+  /users/{userId}:
     get:
       operationId: getUserDetails
       description: Get user details
       parameters:
         - in: path
-          name: id
+          name: userId
           description: The ID of the specific user for which you want details.
           example: 1
           schema:
