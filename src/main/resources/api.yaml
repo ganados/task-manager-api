@@ -1,19 +1,89 @@
 openapi: "3.0.0"
 info:
-  title: Lazychef
+  title: Task manager
   version: 1.0.0
-  description: Lazychef API
+  description: Task manager API
+servers:
+  - url: http://localhost:8080
+    description: Local server
+security:
+  - bearerAuth: []
 paths:
 #####  ##### UserService #####  #####
+  /auth/register:
+    post:
+      operationId: register
+      description: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                type: string
+  /auth/login:
+    post:
+      operationId: login
+      description: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User logged in
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /users:
+    post:
+      operationId: getUsersDetails
+      description: Get selected users details
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                type: array
+                items:
+                    type: string
+                example: [
+                    "32355082-8fcf-422c-be53-fd7d0c478c86",
+                    "32355082-8fcf-422c-be53-fd7d0c478c87"
+                ]
+      responses:
+        '200':
+          description: Users details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetails'
+
   /users/{userId}:
     get:
       operationId: getUserDetails
       description: Get user details
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: userId
           description: The ID of the specific user for which you want details.
-          example: 1
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
           schema:
             type: string
           required: true
@@ -38,6 +108,8 @@ paths:
     post:
       operationId: createBoard
       description: Create board
+      security:
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -56,6 +128,8 @@ paths:
     get:
       operationId: getBoardDetails
       description: Get board details
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: boardId
@@ -82,6 +156,8 @@ paths:
     post:
       operationId: addBoardMembers
       description: Add board members
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: boardId
@@ -108,6 +184,8 @@ paths:
     get:
       operationId: getBoardMembers
       description: Get board members
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: boardId
@@ -136,6 +214,8 @@ paths:
     delete:
       operationId: deleteMember
       description: Delete member from board members
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: boardId
@@ -165,6 +245,8 @@ paths:
     post:
       operationId: createTask
       description: Create task
+      security:
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -181,6 +263,8 @@ paths:
     patch:
       operationId: patchTask
       description: Patch some values of the task
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: taskId
@@ -205,11 +289,13 @@ paths:
     get:
       operationId: getBoardTasks
       description: Get all tasks assigned to board
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: query
           name: boardId
           description: The ID of the specific board for which you want details
-          example: '32355082-8ccf-422c-be53-fd7d0c478c86'
+          example: 32355082-8ccf-422c-be53-fd7d0c478c86
           schema:
             type: string
           required: true
@@ -233,6 +319,8 @@ paths:
     get:
       operationId: getTask
       description: Get task
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: taskId
@@ -258,6 +346,8 @@ paths:
     delete:
       operationId: deleteTask
       description: Delete task
+      security:
+        - bearerAuth: [ ]
       parameters:
         - in: path
           name: taskId
@@ -276,6 +366,11 @@ paths:
 
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
 #####  ##### UserService #####  #####
     User:
@@ -283,6 +378,7 @@ components:
       properties:
         email:
           type: string
+          example: john.doe@example.com
         password:
           type: string
       required:
@@ -293,12 +389,16 @@ components:
       properties:
         id:
           type: string
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
         name:
           type: string
+          example: John
         surname:
           type: string
+          example: Doe
         email:
           type: string
+          example: john.doe@example.com
       required:
         - id
         - name
@@ -311,6 +411,7 @@ components:
       properties:
         boardName:
           type: string
+          example: "My Board"
         ownerId:
           type: string
           example: "d0bf912f-3ca2-4b8c-8953-8d8b137a3084"
@@ -320,10 +421,13 @@ components:
       properties:
         boardId:
           type: string
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
         boardName:
           type: string
+          example: "My Board"
         ownerId:
           type: string
+          example: d0bf912f-3ca2-4b8c-8953-8d8b137a3084
         boardMembers:
           type: array
           items:
@@ -347,36 +451,44 @@ components:
       properties:
         title:
           type: string
+          example: "Task Title"
         description:
           type: string
+          example: "Task Description"
         taskStatus:
           $ref: '#/components/schemas/TaskStatus'
         reporterId:
           type: string
-          example: 'e4114b4e-0296-44e3-9958-099b2abf254b'
+          example: e4114b4e-0296-44e3-9958-099b2abf254b
         assigneeId:
           type: string
-          example: '250e59da-f641-432d-8a6a-4fde276dd667'
+          example: 250e59da-f641-432d-8a6a-4fde276dd667
         boardId:
           type: string
-          example: '32355082-8ccf-422c-be53-fd7d0c478c86'
+          example: 32355082-8ccf-422c-be53-fd7d0c478c86
     TaskDetails:
       type: object
       properties:
         id:
           type: string
+          example: 32355082-8fcf-422c-be53-fd7d0c478c86
         title:
           type: string
+          example: "Task Title"
         description:
           type: string
+          example: "Task Description"
         taskStatus:
           $ref: '#/components/schemas/TaskStatus'
         reporterId:
           type: string
+          example: e4114b4e-0296-44e3-9958-099b2abf254b
         assigneeId:
           type: string
+          example: 250e59da-f641-432d-8a6a-4fde276dd667
         boardId:
           type: string
+          example: 32355082-8ccf-422c-be53-fd7d0c478c86
         createdAt:
           type: string
           format: date-time
